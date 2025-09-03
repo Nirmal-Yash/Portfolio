@@ -1,6 +1,6 @@
 // Portfolio Data - Easy to modify for content updates
 
-export const portfolioData = {
+const portfolioData = {
   personal: {
     name: "Yash Nirmal",
     title: "Cyber Security Enthusiast & Pentester",
