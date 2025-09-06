@@ -1,10 +1,9 @@
-// Portfolio Data - Easy to modify for content updates
-
-const portfolioData = {
+// Portfolio Data
+export const portfolioData = {
   personal: {
     name: "Yash Nirmal",
     title: "Cyber Security Enthusiast & Pentester",
-    bio: "I’m Yash Nirmal — passionate about Cyber Security, Networking, and Exploring. Building skills today to defend systems tomorrow. I love CTF challenges.",
+    bio: "I am Yash Nirmal - passionate about Cyber Security, Networking, and Exploring. Building skills today to defend systems tomorrow. I love CTF challenges.",
     location: "Gondal, Gujarat",
     contact: {
       linkedin: "https://www.linkedin.com/in/yash-nirmal721/",
@@ -86,110 +85,56 @@ const portfolioData = {
       connections: ["pentesting", "linux"]
     }
   ],
-  projects: [
-    {
-      title: "Wordlist",
-      description:
-        "Custom Password Lists to enumerate in Password Cracking Tool with Common Indian Passwords.",
-      github: "https://github.com/Nirmal-Yash/Wordlist",
-      tech: ["Password Cracking", "Security", "Wordlists"],
-    },
-    {
-      title: "PentestAutomation",
-      description: "Scripts for Automation in Penetration Testing for Web Applications Reconnaissance Techniques.",
-      github: "https://github.com/Nirmal-Yash/PentestAutomation",
-      tech: ["Penetration Testing", "Automation", "Shell"],
-    },
-    {
-      title: "Charusat Video Conferencing",
-      description:
-        "A secure video conferencing solution for educational institutions.",
-      github: "https://github.com/Nirmal-Yash/Charusat-Video-Conferencing",
-      tech: ["Video Conferencing", "Security", "WebRTC"],
-    },
-    {
-      title: "StyleFusion",
-      description: "Virtual Try-On ML Model for Men's Clothing.",
-      github: "https://github.com/Nirmal-Yash",
-      tech: ["GAN", "Computer Vision", "Pipeline Integration", "Project Planning"],
-    },
-    // Add more projects from GitHub as needed
-  ],
   certifications: [
     {
       title: "Advent of Cyber 2024",
       issuer: "TryHackMe",
       year: "August 2025",
-      link: "https://drive.google.com/file/d/1OgY0uVfbzAQSaiQg52zWztzuZ_JAWgOa/view",
+      link: "https://drive.google.com/file/d/1OgY0uVfbzAQSaiQg52zWztzuZ_JAWgOa/view"
     },
     {
       title: "Hackerverse CTF Challenge",
       issuer: "EC-Council",
       year: "July 2025",
-      link: "https://drive.google.com/file/d/11u0LNSJrsH9N4EVHcycAjAmgKHrSqDjJ/view",
+      link: "https://drive.google.com/file/d/11u0LNSJrsH9N4EVHcycAjAmgKHrSqDjJ/view"
     },
     {
       title: "Fundamentals of Enterprise Linux 9",
       issuer: "Red Hat",
       year: "February 2025",
-      link: "https://drive.google.com/file/d/1kJcgV6aTE7JUhY6Ig6yntdOQjKFMwzAE/view",
-    },
-    {
-      title: "AWS Encryption Fundamentals",
-      issuer: "AWS",
-      year: "November 2024",
-      link: "https://drive.google.com/file/d/1NswldnxqI5mRFzsZ9nYVb1AFlyia8wmg/view",
-    },
-    {
-      title: "Cyber Security Practical Training",
-      issuer: "Tata Strive",
-      year: "January 2025",
-      link: "https://drive.google.com/file/d/1HwNrhJaSqBTEiwFEIhc8kMEJ-4XED6rg/view",
-    },
+      link: "https://drive.google.com/file/d/1kJcgV6aTE7JUhY6Ig6yntdOQjKFMwzAE/view"
+    }
   ],
-  experience: [
+  projects: [
     {
-      title: "Web Developer Intern",
-      company: "Tririd Technologies Pvt. Ltd.",
-      duration: "Sept 2023 - Nov 2023",
-      description: "Developed and Maintained web application.",
+      title: "Wordlist",
+      description: "Custom Password Lists to enumerate in Password Cracking Tool with Common Indian Passwords.",
+      github: "https://github.com/Nirmal-Yash/Wordlist",
+      tech: ["Password Cracking", "Security", "Wordlists"]
     },
     {
-      title: "Internship Trainee",
-      company: "NSIC Rajkot",
-      duration: "Nov 2023 - Jan 2024",
-      description: "Developed and Maintained web application.",
-    },
+      title: "PentestAutomation",
+      description: "Scripts for Automation in Penetration Testing for Web Applications Reconnaissance Techniques.",
+      github: "https://github.com/Nirmal-Yash/PentestAutomation",
+      tech: ["Penetration Testing", "Automation", "Shell"]
+    }
   ],
-  education: [
-    {
-      degree: "Diploma in Computer Engineering",
-      school: "Gujarat Technological University",
-      year: "2021 - 2024",
-    },
-    {
-      degree: "Bachelor of Technology in Computer Science Engineering",
-      school: "Charusat University",
-      year: "2024 - 2027",
-    },
-  ],
-  // Social/Contact commands (optional)
-  terminalCommands: {
-    home: "echo 'Welcome to Yash Nirmal's Portfolio'",
-    about: "echo 'Cyber Security Enthusiast & Pentester'",
-    projects: "echo 'See GitHub for projects'",
-    contact: "echo 'Contact via LinkedIn or Instagram'",
-  },
+  commandHistory: {
+    home: "cat introduction.txt",
+    about: "echo \"About me and my skills\"",
+    projects: "echo \"See GitHub for projects\"",
+    contact: "echo \"Contact via LinkedIn or Instagram\""
+  }
 };
 
 // XSS Protection - Sanitize user inputs
-function sanitizeInput(str) {
+export function sanitizeInput(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
 }
 
-// Export data for use in other scripts
+// Make available globally for non-module scripts
 if (typeof window !== "undefined") {
   window.portfolioData = portfolioData;
   window.sanitizeInput = sanitizeInput;

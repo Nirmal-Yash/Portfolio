@@ -1,5 +1,5 @@
 // Import portfolio data and components
-import { portfolioData } from '../data/portfolio-data.js';
+import { portfolioData } from '../dist/portfolio-data.js';
 import { SkillsGraph } from './skills-graph.js';
 import { CertificationsSlider } from './certifications-slider.js';
 
@@ -30,14 +30,23 @@ class CyberPortfolio {
                 const targetSection = link.getAttribute('href').substring(1);
                 this.navigateToSection(targetSection);
                 this.updateTerminalCommand(targetSection);
+                
+                // Update active class
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
             });
         });
 
         // Project cards click handlers
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.project-card')) {
-                const projectId = e.target.closest('.project-card').dataset.projectId;
-                this.showProjectModal(projectId);
+            const projectCard = e.target.closest('.project-card');
+            if (projectCard) {
+                e.preventDefault();
+                const projectId = projectCard.dataset.projectId;
+                const project = this.portfolioData.projects.find(p => p.title === projectId);
+                if (project) {
+                    this.showProjectModal(project);
+                }
             }
         });
 
@@ -47,303 +56,137 @@ class CyberPortfolio {
                 this.closeModal();
             }
         });
+    }
 
-        // Security: Disable developer shortcuts and text selection
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('selectstart', e => e.preventDefault());
-        document.addEventListener('keydown', (e) => {
-            // Block F12, Ctrl+Shift+I/J/U, Ctrl+S, Ctrl+U
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && ['I', 'J', 'C', 'U'].includes(e.key.toUpperCase())) ||
-                (e.ctrlKey && ['S', 'U'].includes(e.key.toUpperCase()))
-            ) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
-            if (e.key === 'Escape') {
-                this.closeModal();
-            }
+    navigateToSection(sectionId) {
+        if (this.isAnimating) return;
+        this.isAnimating = true;
+
+        // Hide all sections
+        document.querySelectorAll('section').forEach(section => {
+            section.style.display = 'none';
+            section.classList.remove('active');
         });
+
+        // Show target section
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            setTimeout(() => {
+                targetSection.classList.add('active');
+                this.isAnimating = false;
+                
+                // Reinitialize components if needed
+                if (sectionId === 'home' || sectionId === 'about') {
+                    this.initializeSkillsGraph();
+                }
+                if (sectionId === 'certifications' || sectionId === 'home') {
+                    this.initializeCertificationsSlider();
+                }
+            }, 100);
+        }
+
+        // Update URL hash without scrolling
+        history.pushState(null, null, `#${sectionId}`);
     }
 
     setupNavigation() {
+        // Handle initial section based on URL hash
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            this.navigateToSection(hash);
+        }
+
         // Handle browser back/forward
-        window.addEventListener('popstate', (e) => {
-            const section = e.state?.section || 'home';
-            this.navigateToSection(section, false);
-        });
-
-        // Set initial state
-        history.replaceState({ section: 'home' }, '', '#home');
-    }
-
-    navigateToSection(sectionName, updateHistory = true) {
-        if (this.isAnimating || sectionName === this.currentSection) return;
-
-        this.isAnimating = true;
-
-        // Hide current section
-        const currentElement = document.querySelector(`#${this.currentSection}`);
-        if (currentElement) {
-            currentElement.classList.remove('active');
-        }
-
-        // Show new section with animation
-        setTimeout(() => {
-            const newElement = document.querySelector(`#${sectionName}`);
-            if (newElement) {
-                newElement.classList.add('active');
-                newElement.classList.add('fade-in');
-                
-                // Remove animation class after completion
-                setTimeout(() => {
-                    newElement.classList.remove('fade-in');
-                }, 800);
-            }
-
-            this.currentSection = sectionName;
-            this.isAnimating = false;
-
-            // Update browser history
-            if (updateHistory) {
-                history.pushState({ section: sectionName }, '', `#${sectionName}`);
-            }
-
-            // Update navigation active state
-            this.updateNavigation();
-
-        }, 200);
-    }
-
-    updateNavigation() {
-        document.querySelectorAll('.nav-link').forEach(link => {
-            const linkSection = link.getAttribute('href').substring(1);
-            if (linkSection === this.currentSection) {
-                link.style.color = 'var(--primary-green)';
-                link.style.textShadow = '0 0 10px var(--glow-color)';
-            } else {
-                link.style.color = 'var(--text-secondary)';
-                link.style.textShadow = 'none';
-            }
+        window.addEventListener('popstate', () => {
+            const hash = window.location.hash.substring(1) || 'home';
+            this.navigateToSection(hash);
         });
     }
 
-    updateTerminalCommand(section) {
-        const terminalCommand = document.getElementById('terminal-command');
-        const commands = portfolioData.terminalCommands;
-        
-        if (terminalCommand && commands[section]) {
-            terminalCommand.textContent = '';
-            this.typeCommand(commands[section], terminalCommand);
+    startTypingEffect() {
+        const typedElement = document.getElementById('hero-typed');
+        if (typedElement) {
+            new Typed(typedElement, {
+                strings: [
+                    "yash@security:~$ whoami",
+                    "Security Engineer",
+                    "Penetration Tester",
+                    "OSINT Specialist",
+                    "CTF Player"
+                ],
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true,
+                backDelay: 1500,
+                startDelay: 500
+            });
         }
-    }
-
-    typeCommand(command, element, speed = 50) {
-        let i = 0;
-        const typeChar = () => {
-            if (i < command.length) {
-                element.textContent += command.charAt(i);
-                i++;
-                setTimeout(typeChar, speed);
-            }
-        };
-        typeChar();
     }
 
     loadContent() {
-    this.loadProjects();
-    this.loadCertifications();
-    this.loadContactInfo();
-    }
-    loadContactInfo() {
-        const contactInfo = portfolioData.personal.contact;
-        const contactSection = document.querySelector('.contact-info');
-        if (!contactSection) return;
-
-        // Build contact HTML
-        let html = '';
-        if (contactInfo.email) {
-            html += `<div class="contact-item">
-                <span class="prompt">$</span> echo $EMAIL
-                <div class="contact-value">
-                    <a href="mailto:${sanitizeInput(contactInfo.email)}" class="contact-link">${sanitizeInput(contactInfo.email)}</a>
-                </div>
-            </div>`;
-        }
-        if (contactInfo.phone) {
-            html += `<div class="contact-item">
-                <span class="prompt">$</span> echo $PHONE
-                <div class="contact-value">
-                    <a href="tel:${sanitizeInput(contactInfo.phone)}" class="contact-link">${sanitizeInput(contactInfo.phone)}</a>
-                </div>
-            </div>`;
-        }
-        if (contactInfo.linkedin) {
-            html += `<div class="contact-item">
-                <span class="prompt">$</span> echo $LINKEDIN
-                <div class="contact-value">
-                    <a href="${sanitizeInput(contactInfo.linkedin)}" target="_blank" class="contact-link">${sanitizeInput(contactInfo.linkedin.replace('https://www.linkedin.com/in/', 'linkedin.com/in/'))}</a>
-                </div>
-            </div>`;
-        }
-        if (contactInfo.github) {
-            html += `<div class="contact-item">
-                <span class="prompt">$</span> echo $GITHUB
-                <div class="contact-value">
-                    <a href="${sanitizeInput(contactInfo.github)}" target="_blank" class="contact-link">${sanitizeInput(contactInfo.github.replace('https://github.com/', 'github.com/'))}</a>
-                </div>
-            </div>`;
-        }
-        if (contactInfo.instagram) {
-            html += `<div class="contact-item">
-                <span class="prompt">$</span> echo $INSTAGRAM
-                <div class="contact-value">
-                    <a href="${sanitizeInput(contactInfo.instagram)}" target="_blank" class="contact-link">${sanitizeInput(contactInfo.instagram.replace('https://www.instagram.com/', 'instagram.com/'))}</a>
-                </div>
-            </div>`;
-        }
-        html += `<div class="contact-item">
-            <span class="prompt">$</span> cat /proc/availability
-            <div class="contact-value status-active">
-                ● Available for cybersecurity consulting and projects
-            </div>
-        </div>`;
-        contactSection.innerHTML = html;
+        this.loadProjects();
+        this.loadContactInfo();
+        this.updateTerminalInfo();
     }
 
     loadProjects() {
         const homeProjects = document.getElementById('home-projects');
         const allProjects = document.getElementById('all-projects');
         
-        const projectsHtml = portfolioData.projects.map(project => `
-            <div class="project-card" data-project-id="${project.id}">
-                <div class="project-header">
-                    <h3 class="project-title">${sanitizeInput(project.title)}</h3>
-                    <span class="project-status">${sanitizeInput(project.status)}</span>
-                </div>
-                <p class="project-description">${sanitizeInput(project.description)}</p>
-                <div class="project-tech">
-                    ${project.tech.map(tech => `<span class="tech-tag">${sanitizeInput(tech)}</span>`).join('')}
-                </div>
-                <div class="project-links">
-                    <a href="${project.github}" target="_blank" class="project-link" onclick="event.stopPropagation()">🔗 GitHub</a>
+        if (homeProjects && this.portfolioData.projects) {
+            // Load featured projects on home
+            const featuredProjects = this.portfolioData.projects.slice(0, 3);
+            homeProjects.innerHTML = this.generateProjectsHTML(featuredProjects);
+        }
+        
+        if (allProjects && this.portfolioData.projects) {
+            // Load all projects in projects section
+            allProjects.innerHTML = this.generateProjectsHTML(this.portfolioData.projects);
+        }
+    }
+
+    generateProjectsHTML(projects) {
+        return projects.map(project => `
+            <div class="project-card" data-project-id="${project.title}">
+                <div class="project-content">
+                    <h3 class="project-title">${this.sanitizeInput(project.title)}</h3>
+                    <p class="project-description">${this.sanitizeInput(project.description)}</p>
+                    <div class="project-tech-stack">
+                        ${project.tech.map(tech => `<span class="tech-tag">${this.sanitizeInput(tech)}</span>`).join('')}
+                    </div>
+                    <div class="project-links">
+                        <a href="${project.github}" class="project-link" target="_blank" rel="noopener noreferrer">
+                            <span class="link-icon">📂</span> View Project
+                        </a>
+                    </div>
                 </div>
             </div>
         `).join('');
-
-        if (homeProjects) {
-            homeProjects.innerHTML = projectsHtml;
-        }
-        if (allProjects) {
-            allProjects.innerHTML = projectsHtml;
-        }
     }
 
-    loadCertifications() {
-        const certificationsGallery = document.getElementById('certifications-gallery');
-        
-        if (certificationsGallery) {
-            const certsHtml = portfolioData.certifications.map(cert => `
-                <div class="cert-card">
-                    <h3 class="cert-title">${sanitizeInput(cert.title)}</h3>
-                    <p class="cert-issuer">${sanitizeInput(cert.issuer)}</p>
-                    <p class="cert-year">${sanitizeInput(cert.year)}</p>
-                    <a href="${cert.link}" class="cert-link" target="_blank">🔗 View Certificate</a>
-                </div>
-            `).join('');
-            
-            certificationsGallery.innerHTML = certsHtml;
-        }
-    }
-
-    showProjectModal(projectId) {
-        const project = portfolioData.projects.find(p => p.id == projectId);
-        if (!project) return;
-
-        const modal = document.getElementById('project-modal');
-        const modalContent = document.getElementById('modal-content');
-
-        const featuresHtml = project.features ? project.features.map(feature => 
-            `<li>• ${sanitizeInput(feature)}</li>`
-        ).join('') : '';
-
-        modalContent.innerHTML = `
-            <div class="terminal-line">
-                <span class="prompt">$</span> cat /projects/${project.title.toLowerCase().replace(/\s+/g, '_')}/README.md
-            </div>
-            <div style="margin: 1rem 0;">
-                <h2 style="color: var(--primary-green); margin-bottom: 1rem;">${sanitizeInput(project.title)}</h2>
-                <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
-                    ${sanitizeInput(project.detailed_description || project.description)}
-                </p>
-                
-                <div class="terminal-line" style="margin: 1.5rem 0 0.5rem 0;">
-                    <span class="prompt">$</span> ls -la features/
-                </div>
-                <ul style="color: var(--text-secondary); margin: 0 0 1rem 1rem;">
-                    ${featuresHtml}
-                </ul>
-                
-                <div class="terminal-line" style="margin: 1.5rem 0 0.5rem 0;">
-                    <span class="prompt">$</span> cat tech_stack.txt
-                </div>
-                <div class="project-tech" style="margin-bottom: 1.5rem;">
-                    ${project.tech.map(tech => `<span class="tech-tag">${sanitizeInput(tech)}</span>`).join('')}
-                </div>
-                
-                <div class="terminal-line" style="margin: 1.5rem 0 0.5rem 0;">
-                    <span class="prompt">$</span> echo "Links:"
-                </div>
-                <div class="project-links">
-                    <a href="${project.github}" target="_blank" class="project-link">🔗 GitHub Repository</a>
-                </div>
-            </div>
-        `;
-
-        modal.style.display = 'block';
-        setTimeout(() => {
-            modal.style.opacity = '1';
-        }, 10);
-    }
-
-    closeModal() {
-        const modal = document.getElementById('project-modal');
-        modal.style.opacity = '0';
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300);
-    }
-
-    startTypingEffect() {
-        const heroTypedElement = document.getElementById('hero-typed');
-        if (heroTypedElement && typeof Typed !== 'undefined') {
-            new Typed('#hero-typed', {
-                strings: [
-                    `Entry-Level Security Engineer | OSINT | PenTesting`,
-                    `Aspiring InfoSec Professional | Fast Learner`,
-                    `Yash Nirmal - Ready for New Opportunities`
-                ],
-                typeSpeed: 50,
-                backSpeed: 30,
-                backDelay: 2000,
-                startDelay: 1000,
-                loop: true,
-                showCursor: true,
-                cursorChar: '_'
-            });
+    updateTerminalInfo() {
+        const { name, title, bio } = this.portfolioData.personal;
+        const heroTyped = document.getElementById('hero-typed');
+        if (heroTyped) {
+            heroTyped.setAttribute('data-typed-items', `${name},${title},${bio}`);
         }
     }
 
     initializeSkillsGraph() {
-        const skillsGraph = new SkillsGraph();
-        skillsGraph.render('#skills-graph', this.portfolioData.skills);
+        const skillsContainer = document.getElementById('skills-graph');
+        if (skillsContainer && this.portfolioData.skills) {
+            const skillsGraph = new SkillsGraph();
+            skillsGraph.render('#skills-graph', this.portfolioData.skills);
+        }
     }
 
     initializeCertificationsSlider() {
-        const slider = new CertificationsSlider();
-        slider.init(this.portfolioData.certifications);
+        const sliderContainer = document.getElementById('certifications-slider');
+        if (sliderContainer && this.portfolioData.certifications) {
+            const slider = new CertificationsSlider();
+            slider.init(this.portfolioData.certifications);
+        }
     }
 
     setupMobileMenu() {
@@ -356,7 +199,7 @@ class CyberPortfolio {
                 menuToggle.classList.toggle('active');
             });
 
-            // Close menu when clicking on a link
+            // Close menu when clicking a link
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
                     navMenu.classList.remove('active');
@@ -365,36 +208,103 @@ class CyberPortfolio {
             });
         }
     }
-}
 
-// Security: Input validation and XSS protection
-function validateInput(input) {
-    if (typeof input !== 'string') return false;
-    // Basic validation - no script tags, no javascript: protocols
-    const dangerousPatterns = [
-        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-        /javascript:/gi,
-        /on\w+\s*=/gi
-    ];
-    
-    return !dangerousPatterns.some(pattern => pattern.test(input));
+    updateTerminalCommand(section) {
+        const terminalCommand = document.getElementById('terminal-command');
+        const commands = this.portfolioData.commandHistory;
+        
+        if (terminalCommand && commands[section]) {
+            terminalCommand.textContent = '';
+            this.typeCommand(commands[section], terminalCommand);
+        }
+    }
+
+    loadContactInfo() {
+        const contactInfo = document.querySelector('.contact-info');
+        if (contactInfo && this.portfolioData.personal.contact) {
+            const contact = this.portfolioData.personal.contact;
+            contactInfo.innerHTML = `
+                <div class="contact-links">
+                    <a href="${contact.linkedin}" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <span class="link-icon">🔗</span> LinkedIn
+                    </a>
+                    <a href="${contact.github}" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <span class="link-icon">💻</span> GitHub
+                    </a>
+                    <a href="mailto:${contact.email}" class="contact-link">
+                        <span class="link-icon">📧</span> ${contact.email}
+                    </a>
+                    <a href="tel:${contact.phone}" class="contact-link">
+                        <span class="link-icon">📱</span> ${contact.phone}
+                    </a>
+                    <a href="${contact.instagram}" target="_blank" rel="noopener noreferrer" class="contact-link">
+                        <span class="link-icon">📸</span> Instagram
+                    </a>
+                </div>
+            `;
+        }
+    }
+
+    showProjectModal(project) {
+        const modal = document.getElementById('project-modal');
+        const modalContent = document.getElementById('modal-content');
+        
+        if (modal && modalContent) {
+            modalContent.innerHTML = `
+                <h2>${this.sanitizeInput(project.title)}</h2>
+                <p>${this.sanitizeInput(project.description)}</p>
+                <div class="tech-stack">
+                    <h3>Technologies Used:</h3>
+                    <div class="tech-tags">
+                        ${project.tech.map(tech => `<span class="tech-tag">${this.sanitizeInput(tech)}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="project-links">
+                    <a href="${project.github}" class="project-link" target="_blank" rel="noopener noreferrer">
+                        <span class="link-icon">📂</span> View on GitHub
+                    </a>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+    }
+
+    closeModal() {
+        const modal = document.getElementById('project-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    sanitizeInput(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    typeCommand(command, element) {
+        let i = 0;
+        const typeEffect = () => {
+            if (i < command.length) {
+                element.textContent += command.charAt(i);
+                i++;
+                setTimeout(typeEffect, 50);
+            }
+        };
+        typeEffect();
+    }
 }
 
 // Initialize portfolio when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Security notice
-    // Security logs removed for production
-    
     // Initialize matrix rain background
-    if (typeof window.MatrixRain !== 'undefined') {
-        const matrixRain = new MatrixRain();
-        matrixRain.start();
-    }
+    const matrixRain = new MatrixRain();
+    matrixRain.start();
     
     // Initialize main portfolio
     window.portfolio = new CyberPortfolio();
     
-    // Add security notice to footer
+    // Add security notice
     const securityNotice = document.createElement('div');
     securityNotice.className = 'security-notice';
     securityNotice.innerHTML = '🔒 Secure Portfolio v2.0';
@@ -412,8 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Error handling
 window.addEventListener('error', (e) => {
     console.error('Portfolio Error:', e.error);
-    // Don't expose errors to end users in production
 });
 
 // Export for global access
-window.CyberPortfolio = CyberPortfolio;
+export default CyberPortfolio;

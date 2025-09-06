@@ -7,8 +7,7 @@
     <title>Yash Nirmal Portfolio</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <!-- If you have a favicon.png in public, keep this. Otherwise, remove or update as needed. -->
-    <link rel="icon" type="image/png" href="/portfolio/favicon.png" />
+    <link rel="icon" type="image/png" href="/Portfolio/favicon.png" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; img-src 'self' https: data:; font-src 'self' https:">
@@ -19,8 +18,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.16/typed.min.js" type="text/javascript"></script>
-  <script type="module" crossorigin src="/Portfolio/assets/index-Cy7qGWno.js"></script>
-  <link rel="modulepreload" crossorigin href="/Portfolio/assets/portfolio-DSfKhWN2.js">
+  <script type="module" crossorigin src="/Portfolio/assets/index-VA8Tr2wK.js"></script>
+  <link rel="stylesheet" crossorigin href="/Portfolio/assets/index-CRmXrXTx.css">
 </head>
 <!-- Matrix Rain Background -->
 <canvas id="matrix-rain"></canvas>
@@ -242,8 +241,24 @@
         </div>
     </div>
 </div>
-<!-- Portfolio Data -->
-<!-- Main Scripts -->
+
+    <!-- Portfolio Scripts -->
+    <script src="/js/skills-graph.js"></script>
+    <script src="/js/certifications-slider.js"></script>
+    <script src="/js/matrix-rain.js"></script>
+    <script src="/data/portfolio-data.js"></script>
+    <script src="/js/main.js"></script>
+    
+    <!-- React App Entry -->
+    
+    <!-- Initialize Scripts -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof window.portfolio === 'undefined') {
+            console.warn('Portfolio scripts loading...');
+        }
+    });
+    </script>
 </body>
 
 </html>
