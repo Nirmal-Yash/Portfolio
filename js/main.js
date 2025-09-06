@@ -1,5 +1,5 @@
 // Import portfolio data and components
-import { portfolioData } from '../dist/portfolio-data.js';
+import { portfolioData } from '../data/portfolio-data.js';
 import { SkillsGraph } from './skills-graph.js';
 import { CertificationsSlider } from './certifications-slider.js';
 
