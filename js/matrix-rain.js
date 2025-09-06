@@ -1,5 +1,5 @@
 // Matrix Rain Background Effect
-class MatrixRain {
+export class MatrixRain {
     constructor() {
         this.canvas = document.getElementById('matrix-rain');
         this.ctx = this.canvas.getContext('2d');

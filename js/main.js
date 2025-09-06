@@ -4,7 +4,7 @@ import { SkillsGraph } from './skills-graph.js';
 import { CertificationsSlider } from './certifications-slider.js';
 
 // Main JavaScript functionality
-class CyberPortfolio {
+export class CyberPortfolio {
     constructor() {
         this.currentSection = 'home';
         this.isAnimating = false;
