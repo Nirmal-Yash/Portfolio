@@ -134,7 +134,7 @@ export class CyberPortfolio {
 
     startTypingEffect() {
         const typedElement = document.getElementById('hero-typed');
-        if (typedElement) {
+        if (typedElement && typeof Typed !== 'undefined') {
             new Typed(typedElement, {
                 strings: [
                     "yash@security:~$ whoami",
