@@ -26,8 +26,11 @@ export class CyberPortfolio {
             this.initializeCertificationsSlider(),
             this.setupMobileMenu()
         ]).then(() => {
+            // Mark body as loaded
+            document.body.classList.add('loaded');
+            
             // Hide loading screen with fade effect
-            loader.style.opacity = '0';
+            loader.classList.add('hidden');
             setTimeout(() => {
                 loader.style.display = 'none';
                 
