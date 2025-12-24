@@ -99,8 +99,14 @@ export class CyberPortfolio {
                 if (sectionId === 'home' || sectionId === 'about') {
                     this.initializeSkillsGraph();
                 }
-                if (sectionId === 'certifications' || sectionId === 'home') {
+                if (sectionId === 'home') {
                     this.initializeCertificationsSlider();
+                }
+                if (sectionId === 'certifications') {
+                    const galleryContainer = document.getElementById('certifications-gallery');
+                    if (galleryContainer && this.portfolioData.certifications) {
+                        this.renderCertificationsGallery(galleryContainer);
+                    }
                 }
             }, 100);
         }
@@ -206,6 +212,26 @@ export class CyberPortfolio {
             const slider = new CertificationsSlider();
             slider.init(this.portfolioData.certifications);
         }
+        
+        // Also render certifications gallery on certifications page
+        const galleryContainer = document.getElementById('certifications-gallery');
+        if (galleryContainer && this.portfolioData.certifications) {
+            this.renderCertificationsGallery(galleryContainer);
+        }
+    }
+    
+    renderCertificationsGallery(container) {
+        const certificationsHTML = this.portfolioData.certifications.map(cert => `
+            <div class="cert-card">
+                <h3 class="cert-title">${this.sanitizeInput(cert.title)}</h3>
+                <p class="cert-issuer">${this.sanitizeInput(cert.issuer)}</p>
+                <p class="cert-date">Earned: ${this.sanitizeInput(cert.year)}</p>
+                <a href="${cert.link}" class="cert-link" target="_blank" rel="noopener noreferrer">
+                    🔗 View Certificate
+                </a>
+            </div>
+        `).join('');
+        container.innerHTML = certificationsHTML;
     }
 
     setupMobileMenu() {
