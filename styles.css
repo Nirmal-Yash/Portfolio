@@ -9,11 +9,64 @@
     color: #ffcc00;
     text-shadow: 0 0 5px var(--glow-color);
 }
-/* CSS Reset and Base Styles */
+/* CSS Reset and Ba/* ASCII Art Styles */
+.ascii-art {
+    font-family: 'Share Tech Mono', monospace;
+    white-space: pre;
+    line-height: 1;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.ascii-art pre {
+    font-size: 6px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+@media screen and (min-width: 480px) {
+    .ascii-art pre {
+        font-size: 8px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .ascii-art pre {
+        font-size: 10px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .ascii-art pre {
+        font-size: 12px;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .ascii-art pre {
+        font-size: 14px;
+    }
+}
+
+/* Terminal Window */
+.terminal-window {
+    background: var(--terminal-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}*/
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    scroll-behavior: smooth;
 }
 
 :root {
@@ -22,7 +75,7 @@
     --dark-green: #004400;
     --bg-dark: #0a0a0a;
     --bg-darker: #000000;
-    --terminal-bg: rgba(0, 0, 0, 0.9);
+    --terminal-bg: rgba(0, 0, 0, 0.95);
     --text-primary: #00ff00;
     --text-secondary: #00cc00;
     --text-muted: #006600;
@@ -30,18 +83,25 @@
     --glow-color: rgba(0, 255, 0, 0.5);
     --danger-red: #ff0000;
     --warning-yellow: #ffff00;
+    --accent-cyan: #00bfff;
+    --accent-purple: #9932cc;
+}
+
+/* Enhanced Typography */
+@font-face {
+    font-family: 'Share Tech Mono';
+    font-display: swap;
+    src: url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 }
 
 body {
     background: var(--bg-darker);
     color: var(--text-primary);
-    font-family: 'Courier New', monospace;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
     overflow-x: hidden;
     min-height: 100vh;
-    user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    -moz-user-select: none;
+    line-height: 1.6;
+    transition: background-color 0.3s ease;
 }
 
 /* Matrix Rain Background */
@@ -113,38 +173,38 @@ body {
 }
 
 .nav-link {
-    color: var(--text-secondary);
+    color: var(--text-primary);
     text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 4px;
     transition: all 0.3s ease;
     position: relative;
-    padding: 0.5rem 1rem;
-    border: 1px solid transparent;
+}
+
+.nav-link::before {
+    content: attr(data-cmd);
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8em;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover::before {
+    opacity: 1;
+    top: -25px;
 }
 
 .nav-link:hover {
-    color: var(--primary-green);
-    text-shadow: 0 0 10px var(--glow-color);
-    border-color: var(--border-color);
-    background: rgba(0, 255, 0, 0.1);
+    background: var(--dark-green);
+    box-shadow: 0 0 10px var(--glow-color);
 }
 
-.nav-link:before {
-    content: attr(data-cmd);
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--terminal-bg);
-    padding: 0.25rem 0.5rem;
-    border: 1px solid var(--border-color);
-    font-size: 0.8rem;
-    opacity: 0;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.nav-link:hover:before {
-    opacity: 1;
+.nav-link.active {
+    color: var(--accent-cyan);
+    background: var(--dark-green);
 }
 
 .menu-toggle {
@@ -274,20 +334,26 @@ main {
 /* Terminal Windows */
 .terminal-window {
     background: var(--terminal-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    margin: 2rem 0;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
     backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.terminal-window:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+    transform: translateY(-2px);
 }
 
 .terminal-header {
-    background: rgba(0, 255, 0, 0.1);
+    background: var(--bg-dark);
+    padding: 10px;
     border-bottom: 1px solid var(--border-color);
-    padding: 0.5rem 1rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    border-radius: 6px 6px 0 0;
 }
 
 .terminal-buttons {
@@ -875,6 +941,67 @@ main {
     font-size: 0.8rem;
     color: var(--text-muted);
     z-index: 1000;
+}
+
+/* Loading Animation and Enhanced Transitions */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-darker);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--text-muted);
+    border-top-color: var(--text-primary);
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes glow {
+    0% { text-shadow: 0 0 5px var(--glow-color); }
+    50% { text-shadow: 0 0 20px var(--glow-color); }
+    100% { text-shadow: 0 0 5px var(--glow-color); }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* Focus States */
+a:focus,
+button:focus {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
 
 /* Print Styles */

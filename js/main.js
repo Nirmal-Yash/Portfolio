@@ -13,13 +13,32 @@ export class CyberPortfolio {
     }
 
     init() {
-        this.setupEventListeners();
-        this.setupNavigation();
-        this.loadContent();
-        this.startTypingEffect();
-        this.initializeSkillsGraph();
-        this.initializeCertificationsSlider();
-        this.setupMobileMenu();
+        // Show loading screen
+        const loader = document.getElementById('loading');
+        
+        // Initialize components
+        Promise.all([
+            this.setupEventListeners(),
+            this.setupNavigation(),
+            this.loadContent(),
+            this.startTypingEffect(),
+            this.initializeSkillsGraph(),
+            this.initializeCertificationsSlider(),
+            this.setupMobileMenu()
+        ]).then(() => {
+            // Hide loading screen with fade effect
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                
+                // Trigger initial animations
+                document.querySelectorAll('.section').forEach(section => {
+                    if (section.id === this.currentSection) {
+                        section.classList.add('active');
+                    }
+                });
+            }, 500);
+        });
     }
 
     setupEventListeners() {
